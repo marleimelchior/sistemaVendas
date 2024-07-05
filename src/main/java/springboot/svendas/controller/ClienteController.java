@@ -51,4 +51,11 @@ public class ClienteController {
     public ResponseEntity<Object> buscarTodos() {
         return clienteService.listarClientes();
     }
+
+    //filtro usando o query params
+    @GetMapping("/buscarPorNome")
+    @ResponseBody
+    public ResponseEntity<Object> buscarPorNome(@RequestParam String nome) {
+        return clienteService.buscarPorNome(nome);
+    }
 }

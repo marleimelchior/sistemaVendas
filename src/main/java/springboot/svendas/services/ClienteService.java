@@ -76,6 +76,11 @@ public class ClienteService {
         }
     }
 
+    //metodo que retorna lista de filtro por caracteres do nome
+    public ResponseEntity<Object> buscarPorNome(String nome){
+        return ResponseEntity.ok(clientesRepository.encontrarPorNome(nome));
+    }
+
     //metodo para listar todos os clientes
     public ResponseEntity<Object> listarClientes(){
         return ResponseEntity.ok(clientesRepository.findAll());
