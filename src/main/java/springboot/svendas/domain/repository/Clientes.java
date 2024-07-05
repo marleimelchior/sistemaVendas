@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface Clientes extends JpaRepository<Cliente, Integer> {
 
-
+    //fazer uma query que selecione um cliente pelo nome
     @Query(value = " select * from cliente c where c.nome like %:nome% ", nativeQuery = true)
     List<Cliente> encontrarPorNome(@Param("nome") String nome);
 
@@ -23,6 +23,7 @@ public interface Clientes extends JpaRepository<Cliente, Integer> {
 
     boolean existsByNome(String nome);
 
+    //fazer uma query que selecione um cliente e seus pedidos
     @Query(" select c from Cliente c left join fetch c.pedidos p where c.id = :id")
     Cliente findClientFetchPedidos(@Param("id") Integer id);
 
