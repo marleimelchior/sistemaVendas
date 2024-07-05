@@ -9,7 +9,7 @@ import springboot.svendas.domain.entity.Cliente;
 import java.util.List;
 
 
-public interface Clientes extends JpaRepository<Cliente, Integer> {
+public interface ClientesRepository extends JpaRepository<Cliente, Integer> {
 
     //fazer uma query que selecione um cliente pelo nome
     @Query(value = " select * from cliente c where c.nome like %:nome% ", nativeQuery = true)
