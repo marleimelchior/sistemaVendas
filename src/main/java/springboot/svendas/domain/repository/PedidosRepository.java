@@ -6,7 +6,7 @@ import springboot.svendas.domain.entity.Pedido;
 
 import java.util.List;
 
-public interface Pedidos extends JpaRepository<Pedido, Integer> {
+public interface PedidosRepository extends JpaRepository<Pedido, Integer> {
 
     List<Pedido> findByCliente(Cliente cliente);
 }

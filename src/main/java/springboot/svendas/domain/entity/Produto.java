@@ -1,6 +1,7 @@
 package springboot.svendas.domain.entity;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,9 +19,16 @@ public class Produto {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "nome")
+    private String nome;
+
     @Column(name = "descricao")
     private String descricao;
 
     @Column(name = "preco_unitario")
     private BigDecimal preco;
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco.setScale(2, RoundingMode.HALF_UP);
+    }
 }
