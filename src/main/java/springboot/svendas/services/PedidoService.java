@@ -3,8 +3,7 @@ package springboot.svendas.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import springboot.svendas.domain.DTO.ItemPedidoDTO;
-import springboot.svendas.domain.DTO.PedidoDTO;
+import springboot.svendas.domain.DTO.*;
 import springboot.svendas.domain.entity.Cliente;
 import springboot.svendas.domain.entity.ItemPedido;
 import springboot.svendas.domain.entity.Pedido;
@@ -14,8 +13,10 @@ import springboot.svendas.domain.repository.ItensPedidoRepository;
 import springboot.svendas.domain.repository.PedidosRepository;
 import springboot.svendas.domain.repository.ProdutosRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,4 +61,59 @@ public class PedidoService {
         }).toList();
     };
 
+    public Optional<Pedido> obterPorId(Integer id) {
+        return pedidosRepository.findById(id);
+    }
+
+    public List<Pedido> obterTodos() {
+        return pedidosRepository.findAll();
+    }
+
+    public PedidoResponseDTO converterParaResponseDTO( Pedido pedido ) {
+        PedidoResponseDTO responseDTO = new PedidoResponseDTO();
+        responseDTO.setCodigoPedido(pedido.getId());
+
+        ClienteDTO clienteDTO = new ClienteDTO();
+        clienteDTO.setId(pedido.getCliente().getId());
+        clienteDTO.setNome(pedido.getCliente().getNome());
+        responseDTO.setCliente(clienteDTO);
+
+        responseDTO.setDataPedido(pedido.getDataPedido());
+
+        List<ItemPedidoResponseDTO> itensDTO = pedido.getItens().stream().map(item -> {
+            ItemPedidoResponseDTO itemDTO = new ItemPedidoResponseDTO();
+            itemDTO.setId(item.getId());
+
+            ProdutoDTO produtoDTO = new ProdutoDTO();
+            produtoDTO.setId(item.getProduto().getId());
+            produtoDTO.setNome(item.getProduto().getNome());
+            produtoDTO.setDescricao(item.getProduto().getDescricao());
+            produtoDTO.setPreco(item.getProduto().getPreco());
+            itemDTO.setProduto(produtoDTO);
+
+            itemDTO.setQuantidade(item.getQuantidade());
+            return itemDTO;
+        }).toList();
+
+        responseDTO.setItens(itensDTO);
+
+        BigDecimal total = itensDTO.stream().map(item ->
+                item.getProduto()
+                        .getPreco()
+                        .multiply(new BigDecimal(item.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        responseDTO.setTotal(total);
+        return  responseDTO;
+    };
+
+    @Transactional
+    public void cancelarPedido(Integer id) {
+        Optional<Pedido> pedidoOptional = pedidosRepository.findById(id);
+        if (pedidoOptional.isPresent()) {
+            Pedido pedido = pedidoOptional.get();
+            pedidosRepository.save(pedido);
+        } else {
+            throw new IllegalArgumentException("Pedido não encontrado.");
+        }
+    }
 }
